@@ -28,7 +28,7 @@ CarType car_type_from_string(const std::string &car_type_str) {
 // Handler for the Offers API
 class OffersHandler {
 public:
-	OffersHandler(db::DataBase db) : database(db) {}
+	OffersHandler(db::DataBase & db) : database(db) {}
 
 	// POST /api/offers - Adds new offers
 	void postOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
@@ -203,7 +203,7 @@ public:
 
 
 private:
-	DataBase &database;
+	DataBase & database;
 };
 
 
