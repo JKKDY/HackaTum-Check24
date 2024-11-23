@@ -35,36 +35,36 @@ public:
 		std::cout << "POST" << std::endl;
 		try {
 			// Parse the JSON body of the request
-			auto body = json::parse(request.body());
-			if (body.find("offers") == body.end()) {
-				response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
-				return;
-			}
-			std::cout << "Pre Parse" << std::endl;
+			// auto body = json::parse(request.body());
+			// if (body.find("offers") == body.end()) {
+			// 	response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
+			// 	return;
+			// }
+			// std::cout << "Pre Parse" << std::endl;
+			//
+			// // Process each offer in the 'offers' array
+			// const auto &offersArray = body["offers"];
+			// for (const auto &offerJson : offersArray) {
+			// 	Offer offer = {.start_date = offerJson["startDate"].get<int64_t>(),
+			// 				   .end_date = offerJson["endDate"].get<int64_t>(),
+			// 				   .id = offerJson["ID"].get<std::string>(),
+			// 				   .data =
+			// 					   [&offerJson] {
+			// 						   std::array<char, 256> arr{};
+			// 						   std::string data_str = offerJson["data"].get<std::string>();
+			// 						   std::copy(data_str.begin(), data_str.end(), arr.begin());
+			// 						   return arr;
+			// 					   }(),
+			// 				   .region_id = offerJson["mostSpecificRegionID"].get<int>(),
+			// 				   .number_seats = offerJson["numberSeats"].get<int>(),
+			// 				   .price = offerJson["price"].get<int>(),
+			// 				   .free_kilometers = offerJson["freeKilometers"].get<int>(),
+			// 				   .car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
+			// 				   .has_vollkasko = offerJson["hasVollkasko"].get<bool>()};
 
-			// Process each offer in the 'offers' array
-			const auto &offersArray = body["offers"];
-			for (const auto &offerJson : offersArray) {
-				Offer offer = {.start_date = offerJson["startDate"].get<int64_t>(),
-							   .end_date = offerJson["endDate"].get<int64_t>(),
-							   .id = offerJson["ID"].get<std::string>(),
-							   .data =
-								   [&offerJson] {
-									   std::array<char, 256> arr{};
-									   std::string data_str = offerJson["data"].get<std::string>();
-									   std::copy(data_str.begin(), data_str.end(), arr.begin());
-									   return arr;
-								   }(),
-							   .region_id = offerJson["mostSpecificRegionID"].get<int>(),
-							   .number_seats = offerJson["numberSeats"].get<int>(),
-							   .price = offerJson["price"].get<int>(),
-							   .free_kilometers = offerJson["freeKilometers"].get<int>(),
-							   .car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
-							   .has_vollkasko = offerJson["hasVollkasko"].get<bool>()};
-
-				std::cout << "New offer added: " << offer.id << std::endl;
-				database.add_offer(offer);
-			}
+				// std::cout << "New offer added: " << offer.id << std::endl;
+				// database.add_offer(offer);
+			// }
 			response.send(Pistache::Http::Code::Ok, "Offers added successfully");
 			std::cout << "Done with adding offers" << std::endl;
 
@@ -195,7 +195,7 @@ void setupRoutes(Pistache::Rest::Router &router, OffersHandler &offersHandler) {
 	using namespace Pistache::Rest;
 	Routes::Post(router, "/api/offers", Routes::bind(&OffersHandler::postOffers, &offersHandler));
 	Routes::Delete(router, "/api/offers", Routes::bind(&OffersHandler::deleteOffers, &offersHandler));
-	// Routes::Get(router, "/api/offers", Routes::bind(&OffersHandler::getOffers, &offersHandler));
+	Routes::Get(router, "/api/offers", Routes::bind(&OffersHandler::getOffers, &offersHandler));
 }
 
 #include <fstream>
@@ -225,7 +225,7 @@ int main() {
 
 	auto options = Pistache::Http::Endpoint::options().threads(1)
 	// .flags(Pistache::Tcp::Options::ReuseAddr)
-	.maxRequestSize(10 * 1024);  // Allow 100 MB payloads (you can
+	.maxRequestSize(1024 * 1024);  // Allow 100 MB payloads (you can
 	// adjust this as needed);
 
 	server.init(options);
