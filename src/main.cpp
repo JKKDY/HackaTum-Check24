@@ -107,11 +107,14 @@ public:
 				.min_free_kilometer_width = std::stoi(request.query().get("minFreeKilometerWidth").value_or("100")),
 
 				.min_number_seats = std::stoi(request.query().get("minNumberSeats").value_or("0")),
-				.min_price = std::stoi(request.query().get("minPrice").value_or(MIN)),
-				.max_price = std::stoi(request.query().get("maxPrice").value_or(MAX)),
+				.min_price = std::stoi(request.query().get("minPrice").value_or("-1")),
+				.max_price = std::stoi(request.query().get("maxPrice").value_or("-1")),
 				.car_type = car_type_from_string(request.query().get("carType").value_or(CarType::ALL)),
-				.only_vollkasko = request.query().get("onlyVollkasko").value_or(false) == "true",
+				.only_vollkasko = request.query().get("onlyVollkasko").value_or("false") == "true",
 				.min_free_kilometer = std::stoi(request.query().get("minFreeKilometer").value_or("0"))};
+
+			if (get_request.min_price == -1) get_request.min_price = MIN;
+			if (get_request.max_price == -1) get_request.max_price = MAX;
 
 			std::cout << "OFFER" << std::endl;
 
