@@ -65,6 +65,7 @@ public:
 			response.send(Pistache::Http::Code::Ok, "Offers added successfully");
 		}
 		catch (const std::exception &e) {
+			std::cout << "eeeeeeeeeeeeee" << e.what() << std::endl;
 			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
 		}
 	}
