@@ -8,7 +8,10 @@
 namespace db {
 
 	DataBase::DataBase() {}
-	void DataBase::add_offer(const Offer &offer) { offers.push_back(offer); }
+	void DataBase::add_offer(const Offer &offer) {
+		offers.push_back(offer);
+		std::cout << "added offer no." << offers.size() << std::endl;
+	}
 
 	Offers DataBase::get(const GetRequest &req) {
 		Offers ret;
