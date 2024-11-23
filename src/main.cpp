@@ -209,7 +209,7 @@ int main() {
 
     auto options = Pistache::Http::Endpoint::options()
     .threads(1)
-    .flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(100 * 1024 * 1024);  // Allow 100 MB payloads (you can adjust this as needed);
+    .flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(1 * 1024 * 1024);  // Allow 100 MB payloads (you can adjust this as needed);
 
 	server.init(options);
 
