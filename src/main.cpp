@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <nlohmann/json.hpp>  // For JSON parsing
+#include "src/DataBase.h"
 
 using namespace Pistache;
 using json = nlohmann::json;
@@ -64,7 +65,7 @@ public:
                 // Add the offer to the in-memory vector
                 offers.push_back(offer);
             }
-
+            db.add_offer(offer)
             response.send(Http::Code::Ok, "Offers added successfully");
         } catch (const std::exception& e) {
             response.send(Http::Code::Internal_Server_Error, e.what());
@@ -77,6 +78,7 @@ void setupRoutes(Rest::Router& router) {
 }
 
 int main() {
+    Database db;
     Address addr(Ipv4::any(), Port(80));
     auto opts = Http::Endpoint::options().threads(1);
 
@@ -92,3 +94,5 @@ int main() {
 
     return 0;
 }
+
+
