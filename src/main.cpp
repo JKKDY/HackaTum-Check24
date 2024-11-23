@@ -178,7 +178,7 @@ public:
 
 			std::cout << "Fertig" << std::endl;
 		}
-		catch (const json::exception &e) {
+		catch (const std::exception &e) {
 			std::cout << "CATCH" << e.what() << std::endl;
 
 			// Handle JSON parsing errors or missing fields
