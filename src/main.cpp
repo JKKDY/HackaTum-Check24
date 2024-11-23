@@ -32,7 +32,6 @@ public:
 
 	// POST /api/offers - Adds new offers
 	void postOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
-		std::cout << "OffersHandler::postOffers" << std::endl;
 		try {
 			// Parse the JSON body of the request
 			auto body = json::parse(request.body());
@@ -40,11 +39,9 @@ public:
 				response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
 				return;
 			}
-			std::cout << "WOOOOOOOOOO" << std::endl;
 			// Process each offer in the 'offers' array
 			const auto &offersArray = body["offers"];
 			for (const auto &offerJson : offersArray) {
-				std::cout << "AHHHHHHHHHHHHHHHH" << std::endl;
 				Offer offer ={
 						.start_date = offerJson["startDate"].get<int64_t>(),
 						.end_date = offerJson["endDate"].get<int64_t>(),
@@ -65,17 +62,14 @@ public:
 					};
 
 				std::cout << "New offer: "<<offer.id << std::endl;
-				// database.add_offer(offer);
-				// Add the offer to the in-memory vector
+				database.add_offer(offer);
 			}
-			std::cout << "Fertig" << std::endl;
 			response.send(Pistache::Http::Code::Ok, "Offers added successfully");
 		}
 		catch (const std::exception &e) {
 			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
 		}
 		std::cout << "Fertig x 2" << std::endl;
-
 	}
 
 
@@ -208,8 +202,8 @@ int main() {
 	setupRoutes(router, offersHandler);
 
     auto options = Pistache::Http::Endpoint::options()
-    .threads(1)
-    .flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(1 * 1024 * 1024);  // Allow 100 MB payloads (you can adjust this as needed);
+    .threads(1);
+    // .flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(1 * 1024 * 1024);  // Allow 100 MB payloads (you can adjust this as needed);
 
 	server.init(options);
 
