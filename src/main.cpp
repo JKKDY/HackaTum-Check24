@@ -32,6 +32,7 @@ public:
 
 	// POST /api/offers - Adds new offers
 	void postOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
+		std::cout << "OffersHandler::postOffers" << std::endl;
 		try {
 			// Parse the JSON body of the request
 			auto body = json::parse(request.body());
@@ -77,6 +78,7 @@ public:
 
 	// DELETE /api/offers - Clears all offers
 	void deleteOffers(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+		std::cout << "deleteOffers" << std::endl;
 		try {
 			// database.clear_offers(); // Assuming the database has a method to clear all offers
 			std::cout << "All offers cleared from the database" << std::endl;
