@@ -40,10 +40,11 @@ public:
 				response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
 				return;
 			}
-
+			std::cout << "WOOOOOOOOOO" << std::endl;
 			// Process each offer in the 'offers' array
 			const auto &offersArray = body["offers"];
 			for (const auto &offerJson : offersArray) {
+				std::cout << "AHHHHHHHHHHHHHHHH" << std::endl;
 				Offer offer ={
 						.start_date = offerJson["startDate"].get<int64_t>(),
 						.end_date = offerJson["endDate"].get<int64_t>(),
@@ -67,12 +68,14 @@ public:
 				// database.add_offer(offer);
 				// Add the offer to the in-memory vector
 			}
-
+			std::cout << "Fertig" << std::endl;
 			response.send(Pistache::Http::Code::Ok, "Offers added successfully");
 		}
 		catch (const std::exception &e) {
 			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
 		}
+		std::cout << "Fertig x 2" << std::endl;
+
 	}
 
 
