@@ -32,7 +32,7 @@ add_executable(HackCheck ${MY_SRC}
 # set cxx standard.
 target_compile_features(HackCheck
         PRIVATE
-        cxx_std_17
+        cxx_std_20
 )
 
 target_include_directories(HackCheck
