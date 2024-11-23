@@ -211,6 +211,7 @@ void queryMemory() {
 
 
 int main() {
+	std::cout << "kdgljrsljfhgljrdlnfdthlnd" << std::endl;
 	DataBase database;
 	OffersHandler offersHandler(database);
 
