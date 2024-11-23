@@ -15,7 +15,12 @@ namespace db {
 		std::vector<Offer> valid_offers;
 
 		for (auto offer : offers) {
-			if (offer.region)
+			if (offer.region_id == req.region_id) {
+				valid_offers.push_back(offer);
+			}
+
+
+
 		}
 
 	}

@@ -1,98 +1,108 @@
+#include <iostream>
+#include <nlohmann/json.hpp> // For JSON parsing
 #include <pistache/endpoint.h>
 #include <pistache/http.h>
 #include <pistache/router.h>
-#include <iostream>
 #include <string>
-#include <vector>
-#include <nlohmann/json.hpp>  // For JSON parsing
-#include "src/DataBase.h"
 
-using namespace Pistache;
+#include "database/DataBase.h"
+
 using json = nlohmann::json;
 
-// Offer structure
-struct Offer {
-    std::string ID;
-    std::string data;
-    int mostSpecificRegionID;
-    int64_t startDate;
-    int64_t endDate;
-    int numberSeats;
-    int price;
-    std::string carType;
-    bool hasVollkasko;
-    int freeKilometers;
 
-    // Simple constructor to initialize the Offer object
-    Offer(const std::string& id, const std::string& data, int regionID, int64_t start, int64_t end,
-          int seats, int price, const std::string& carType, bool vollkasko, int freeKm)
-            : ID(id), data(data), mostSpecificRegionID(regionID), startDate(start), endDate(end),
-              numberSeats(seats), price(price), carType(carType), hasVollkasko(vollkasko), freeKilometers(freeKm) {}
-};
+using namespace db;
 
-// In-memory list to store offers
-std::vector<Offer> offers;
+CarType car_type_from_string(const std::string &car_type_str) {
+	if (car_type_str == "small")
+		return CarType::SMALL;
+	if (car_type_str == "sports")
+		return CarType::SPORTS;
+	if (car_type_str == "luxury")
+		return CarType::LUXURY;
+	if (car_type_str == "family")
+		return CarType::FAMILY;
+	return CarType::ALL; // Default for unknown car types
+}
+
 
 // Handler for the Offers API
 class OffersHandler {
 public:
-    // POST /api/offers - Adds new offers
-    static void postOffers(const Rest::Request& request, Http::ResponseWriter response) {
-        try {
-            // Parse the JSON body of the request
-            auto body = json::parse(request.body());
-            if (body.find("offers") == body.end()) {
-                response.send(Http::Code::Bad_Request, "Missing 'offers' field in JSON");
-                return;
-            }
+	OffersHandler(db::DataBase db) : database(db) {}
+	// POST /api/offers - Adds new offers
+	void postOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
+		try {
+			// Parse the JSON body of the request
+			auto body = json::parse(request.body());
+			if (body.find("offers") == body.end()) {
+				response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
+				return;
+			}
 
-            // Process each offer in the 'offers' array
-            const auto& offersArray = body["offers"];
-            for (const auto& offerJson : offersArray) {
-                Offer offer(
-                        offerJson["ID"].get<std::string>(),
-                        offerJson["data"].get<std::string>(),
-                        offerJson["mostSpecificRegionID"].get<int>(),
-                        offerJson["startDate"].get<int64_t>(),
-                        offerJson["endDate"].get<int64_t>(),
-                        offerJson["numberSeats"].get<int>(),
-                        offerJson["price"].get<int>(),
-                        offerJson["carType"].get<std::string>(),
-                        offerJson["hasVollkasko"].get<bool>(),
-                        offerJson["freeKilometers"].get<int>()
-                );
+			// Process each offer in the 'offers' array
+			const auto &offersArray = body["offers"];
+			for (const auto &offerJson : offersArray) {
+				Offer offer ={
+						.start_date = offerJson["startDate"].get<int64_t>(),
+						.end_date = offerJson["endDate"].get<int64_t>(),
+						.id = offerJson["ID"].get<std::string>(),
+						.data =
+							[] {
+								std::array<char, 256> arr{};
+								std::string data_str = offerJson["data"].get<std::string>();
+								std::copy(data_str.begin(), data_str.end(), arr.begin());
+								return arr;
+							}(),
+						.region_id = offerJson["mostSpecificRegionID"].get<int>(),
+						.number_seats = offerJson["numberSeats"].get<int>(),
+						.price = offerJson["price"].get<int>(),
+						.free_kilometers = offerJson["freeKilometers"].get<int>(),
+						.car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
+						.has_vollkasko = offerJson["hasVollkasko"].get<bool>()
+					};
+				database.add_offer(offer);
+				// Add the offer to the in-memory vector
+			}
 
-                // Add the offer to the in-memory vector
-                offers.push_back(offer);
-            }
-            db.add_offer(offer)
-            response.send(Http::Code::Ok, "Offers added successfully");
-        } catch (const std::exception& e) {
-            response.send(Http::Code::Internal_Server_Error, e.what());
-        }
-    }
+			response.send(Pistache::Http::Code::Ok, "Offers added successfully");
+		}
+		catch (const std::exception &e) {
+			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
+		}
+	}
+
+private:
+	DataBase &database;
 };
 
-void setupRoutes(Rest::Router& router) {
-    Rest::Routes::Post(router, "/api/offers", Rest::Routes::bind(&OffersHandler::postOffers));
+
+void setupRoutes(Pistache::Rest::Router &router, OffersHandler& offersHandler) {
+	using namespace Pistache::Rest;
+	Routes::Post(router, "/api/offers", Routes::bind(&OffersHandler::postOffers, &offersHandler));
 }
 
 int main() {
-    Database db;
-    Address addr(Ipv4::any(), Port(80));
-    auto opts = Http::Endpoint::options().threads(1);
+	DataBase database;
+	OffersHandler offersHandler(database);
 
-    Http::Endpoint server(addr);
-    server.init(opts);
+	Pistache::Address address("*:80"); // Bind to all network interfaces on port 80
+	Pistache::Http::Endpoint server(address);
 
-    Rest::Router router;
-    setupRoutes(router);
+	Pistache::Rest::Router router;
+	setupRoutes(router, offersHandler);
 
-    server.setHandler(router.handler());
-    std::cout << "Server running on port 80..." << std::endl;
-    server.serve();
+	auto options = Pistache::Http::Endpoint::options()
+	.threads(1)
+	.flags(Pistache::Tcp::Options::ReuseAddr);
 
-    return 0;
+	server.init(options);
+
+	server.setHandler(router.handler());
+
+	std::cout << "Starting server on port 80..." << std::endl;
+
+	server.serve();
+	server.shutdown();
+
+	return 0;
 }
-
-

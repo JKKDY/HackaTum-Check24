@@ -9,10 +9,10 @@ namespace db {
 
 	enum class CarType {
 		SMALL = 0x1,
-		SPORT = 0x2,
+		SPORTS = 0x2,
 		LUXURY = 0x4,
 		FAMILY = 0x8,
-		ALL = LUXURY | FAMILY | SPORT | SMALL
+		ALL = LUXURY | FAMILY | SPORTS | SMALL
 	};
 
 	struct Offer {
