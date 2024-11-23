@@ -76,14 +76,42 @@ public:
 	}
 
 
-	void getOffer() {
+    // GET /api/offers - Adds new offers
+    void getOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
+        std::cout << "OffersHandler::getOffers" << std::endl;
 
-		GetRequest request;
+        try {
+            auto body = json::parse(request.body());
+            // Parse the required fields
+            GetRequest request = {
+                    .region_id = body.at("region_id").get<int>(),  // Required
+                    .time_range_start = body.at("time_range_start").get<int64_t>(),  // Required
+                    .time_range_end = body.at("time_range_end").get<int64_t>(),  // Required
+                    .number_days = body.at("number_days").get<int>(),  // Required
 
-		offers = database.get(request);
+                    .sort_order = body.value("sort_order", SortOrder::PriceAsc),  // Optional with default
+                    .page = body.value("page", 1),  // Optional with default
+                    .page_size = body.value("page_size", 10),  // Optional with default
+                    .price_range_width = body.value("price_range_width", 1000),  // Optional with default
+                    .min_free_kilometer_width = body.value("min_free_kilometer_width", 100),  // Optional with default
 
-		response.send(kdhglifdghjl)
-	}
+                    .min_number_seats = body.value("min_number_seats", 0),  // Optional
+                    .min_price = body.value("min_price", 0),  // Optional
+                    .max_price = body.value("max_price", 0),  // Optional
+                    .car_type = body.value("car_type", CarType::ALL),  // Optional
+                    .only_vollkasko = body.value("only_vollkasko", false),  // Optional
+                    .min_free_kilometer = body.value("min_free_kilometer", 0)  // Optional
+            };
+
+            offers = database.get(request);
+
+            response.send(Pistache::Http::Code::Ok, offers.dump()); // Assuming offers is JSON-compatible
+        }
+        catch (const json::exception& e) {
+            // Handle JSON parsing errors or missing fields
+            response.send(Pistache::Http::Code::Bad_Request, std::string("Error parsing request: ") + e.what());
+        }
+    }
 
 
 	// DELETE /api/offers - Clears all offers
@@ -110,6 +138,7 @@ void setupRoutes(Pistache::Rest::Router &router, OffersHandler& offersHandler) {
 	using namespace Pistache::Rest;
 	Routes::Post(router, "/api/offers", Routes::bind(&OffersHandler::postOffers, &offersHandler));
 	Routes::Delete(router, "/api/offers", Routes::bind(&OffersHandler::deleteOffers, &offersHandler));
+    Routes::Get(router, "/api/offers", Routes::bind(&OffersHandler::getOffers, &offersHandler));
 }
 
 int main() {
@@ -122,9 +151,9 @@ int main() {
 	Pistache::Rest::Router router;
 	setupRoutes(router, offersHandler);
 
-	auto options = Pistache::Http::Endpoint::options()
-	.threads(1)
-	.flags(Pistache::Tcp::Options::ReuseAddr);
+    auto options = Pistache::Http::Endpoint::options()
+    .threads(1)
+    .flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(100 * 1024 * 1024);  // Allow 100 MB payloads (you can adjust this as needed);
 
 	server.init(options);
 
