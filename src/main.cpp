@@ -35,12 +35,12 @@ public:
 		std::cout << "POST" << std::endl;
 		try {
 			// Parse the JSON body of the request
-			// auto body = json::parse(request.body());
+			auto body = json::parse(request.body());
 			// if (body.find("offers") == body.end()) {
 			// 	response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
 			// 	return;
 			// }
-			// std::cout << "Pre Parse" << std::endl;
+			std::cout << "Pre Parse" << std::endl;
 			//
 			// // Process each offer in the 'offers' array
 			// const auto &offersArray = body["offers"];
