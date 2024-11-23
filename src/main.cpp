@@ -221,8 +221,8 @@ int main() {
 	Pistache::Rest::Router router;
 	setupRoutes(router, offersHandler);
 
-	auto options = Pistache::Http::Endpoint::options().threads(1);
-	// .flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(1 * 1024 * 1024);  // Allow 100 MB payloads (you can
+	auto options = Pistache::Http::Endpoint::options().threads(1)
+	.flags(Pistache::Tcp::Options::ReuseAddr).maxRequestSize(1 * 1024 * 1024);  // Allow 100 MB payloads (you can
 	// adjust this as needed);
 
 	server.init(options);
