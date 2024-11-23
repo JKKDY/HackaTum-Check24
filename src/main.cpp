@@ -123,7 +123,6 @@ public:
 
     	std::cout << "Json die erste" << std::endl;
 
-
         // Serialize the `offers` field
         for (const auto& offer : offers.offers) {
             response_json["offers"].push_back({
@@ -168,6 +167,8 @@ public:
 
     }
     catch (const json::exception& e) {
+    	std::cout << "CATCH" << e.what() << std::endl;
+
         // Handle JSON parsing errors or missing fields
         response.send(Pistache::Http::Code::Bad_Request, std::string("Error parsing request: ") + e.what());
     }
