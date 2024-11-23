@@ -1,9 +1,10 @@
 #include <pistache/endpoint.h>
 #include <pistache/http.h>
 #include <pistache/router.h>
-#include <nlohmann/json.hpp>
-#include <unordered_map>
 #include <iostream>
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>  // For JSON parsing
 
 using namespace Pistache;
 using json = nlohmann::json;
@@ -21,42 +22,47 @@ struct Offer {
     bool hasVollkasko;
     int freeKilometers;
 
-    // Parse Offer from JSON
-    static Offer fromJson(const json& j) {
-        return Offer{
-                j.at("ID").get<std::string>(),
-                j.at("data").get<std::string>(),
-                j.at("mostSpecificRegionID").get<int>(),
-                j.at("startDate").get<int64_t>(),
-                j.at("endDate").get<int64_t>(),
-                j.at("numberSeats").get<int>(),
-                j.at("price").get<int>(),
-                j.at("carType").get<std::string>(),
-                j.at("hasVollkasko").get<bool>(),
-                j.at("freeKilometers").get<int>()
-        };
-    }
+    // Simple constructor to initialize the Offer object
+    Offer(const std::string& id, const std::string& data, int regionID, int64_t start, int64_t end,
+          int seats, int price, const std::string& carType, bool vollkasko, int freeKm)
+            : ID(id), data(data), mostSpecificRegionID(regionID), startDate(start), endDate(end),
+              numberSeats(seats), price(price), carType(carType), hasVollkasko(vollkasko), freeKilometers(freeKm) {}
 };
 
-// Global map to store offers
-std::unordered_map<std::string, Offer> offers;
+// In-memory list to store offers
+std::vector<Offer> offers;
 
+// Handler for the Offers API
 class OffersHandler {
 public:
     // POST /api/offers - Adds new offers
     static void postOffers(const Rest::Request& request, Http::ResponseWriter response) {
         try {
-            // Parse JSON body
+            // Parse the JSON body of the request
             auto body = json::parse(request.body());
-            if (!body.contains("offers") || !body["offers"].is_array()) {
-                response.send(Http::Code::Bad_Request, "Invalid JSON body");
+            if (body.find("offers") == body.end()) {
+                response.send(Http::Code::Bad_Request, "Missing 'offers' field in JSON");
                 return;
             }
 
-            // Process and store offers
-            for (const auto& offerJson : body["offers"]) {
-                Offer offer = Offer::fromJson(offerJson);
-                offers[offer.ID] = offer;  // Store the offer by ID
+            // Process each offer in the 'offers' array
+            const auto& offersArray = body["offers"];
+            for (const auto& offerJson : offersArray) {
+                Offer offer(
+                        offerJson["ID"].get<std::string>(),
+                        offerJson["data"].get<std::string>(),
+                        offerJson["mostSpecificRegionID"].get<int>(),
+                        offerJson["startDate"].get<int64_t>(),
+                        offerJson["endDate"].get<int64_t>(),
+                        offerJson["numberSeats"].get<int>(),
+                        offerJson["price"].get<int>(),
+                        offerJson["carType"].get<std::string>(),
+                        offerJson["hasVollkasko"].get<bool>(),
+                        offerJson["freeKilometers"].get<int>()
+                );
+
+                // Add the offer to the in-memory vector
+                offers.push_back(offer);
             }
 
             response.send(Http::Code::Ok, "Offers added successfully");
@@ -64,37 +70,25 @@ public:
             response.send(Http::Code::Internal_Server_Error, e.what());
         }
     }
-
-    // GET /api/offers - Retrieves all offers
-    static void getOffers(const Rest::Request& request, Http::ResponseWriter response) {
-        // Serialize offers to JSON
-        json responseBody = {{"offers", json::array()}};
-        for (const auto& [id, offer] : offers) {
-            responseBody["offers"].push_back({
-                                                     {"ID", offer.ID},
-                                                     {"data", offer.data},
-                                                     {"mostSpecificRegionID", offer.mostSpecificRegionID},
-                                                     {"startDate", offer.startDate},
-                                                     {"endDate", offer.endDate},
-                                                     {"numberSeats", offer.numberSeats},
-                                                     {"price", offer.price},
-                                                     {"carType", offer.carType},
-                                                     {"hasVollkasko", offer.hasVollkasko},
-                                                     {"freeKilometers", offer.freeKilometers}
-                                             });
-        }
-
-        response.send(Http::Code::Ok, responseBody.dump());
-    }
-
-    // DELETE /api/offers - Clears all offers
-    static void deleteOffers(const Rest::Request& request, Http::ResponseWriter response) {
-        offers.clear();
-        response.send(Http::Code::Ok, "All offers deleted");
-    }
 };
 
-// Set up routes
 void setupRoutes(Rest::Router& router) {
     Rest::Routes::Post(router, "/api/offers", Rest::Routes::bind(&OffersHandler::postOffers));
-    Rest::Routes::Get(router
+}
+
+int main() {
+    Address addr(Ipv4::any(), Port(80));
+    auto opts = Http::Endpoint::options().threads(1);
+
+    Http::Endpoint server(addr);
+    server.init(opts);
+
+    Rest::Router router;
+    setupRoutes(router);
+
+    server.setHandler(router.handler());
+    std::cout << "Server running on port 80..." << std::endl;
+    server.serve();
+
+    return 0;
+}
