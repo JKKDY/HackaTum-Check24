@@ -83,13 +83,13 @@ public:
         try {
             auto body = json::parse(request.body());
             // Parse the required fields
-            GetRequest request = {
+            GetRequest get_request = {
                     .region_id = body.at("region_id").get<int>(),  // Required
                     .time_range_start = body.at("time_range_start").get<int64_t>(),  // Required
                     .time_range_end = body.at("time_range_end").get<int64_t>(),  // Required
                     .number_days = body.at("number_days").get<int>(),  // Required
 
-                    .sort_order = body.value("sort_order", SortOrder::PriceAsc),  // Optional with default
+                    .sort_order = body.value("sort_order", SortOrder::ASCENDING),  // Optional with default
                     .page = body.value("page", 1),  // Optional with default
                     .page_size = body.value("page_size", 10),  // Optional with default
                     .price_range_width = body.value("price_range_width", 1000),  // Optional with default
@@ -103,7 +103,9 @@ public:
                     .min_free_kilometer = body.value("min_free_kilometer", 0)  // Optional
             };
 
-            offers = database.get(request);
+            Offers offers = database.get(get_request);
+
+
 
             response.send(Pistache::Http::Code::Ok, offers.dump()); // Assuming offers is JSON-compatible
         }
