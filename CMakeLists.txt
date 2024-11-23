@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
+include(FetchContent)
 # define project name, version
 project(HackaTum_Check24_Challenge VERSION 0.0.1)
 
@@ -30,7 +31,7 @@ add_executable(HackCheck ${MY_SRC})
 # set cxx standard.
 target_compile_features(HackCheck
         PRIVATE
-        cxx_std_23
+        cxx_std_17
 )
 
 target_include_directories(HackCheck
@@ -44,4 +45,11 @@ target_compile_options(HackCheck
         $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
 )
+
+
+find_package(PkgConfig)
+pkg_check_modules(Pistache REQUIRED IMPORTED_TARGET libpistache)
+
+target_link_libraries(HackCheck PkgConfig::Pistache)
+
 
