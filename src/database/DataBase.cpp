@@ -34,6 +34,7 @@ namespace db {
 
 		int max_seats = 0;
 		int max_free_km = 0;
+		int max_price = 0;
 
 		std::cout << "Ok" << std::endl;
 
@@ -55,6 +56,9 @@ namespace db {
 				if (offer.free_kilometers > max_free_km) {
 					max_free_km = offer.free_kilometers;
 				}
+				if (offer.price > max_price) {
+					max_price = offer.price;
+				}
 			}
 		}
 
@@ -73,7 +77,7 @@ namespace db {
 		// create price bins
 		std::cout << req.min_price << "  PRICE   " << req.max_price << std::endl;
 		std::cout << req.price_range_width << std::endl;
-		for (int i = std::max(req.min_price, 0); i < req.max_price; i += req.price_range_width) {
+		for (int i = std::max(req.min_price, 0); i < max_price; i += req.price_range_width) {
 			ret.price_ranges.emplace_back(i, i + req.price_range_width);
 		}
 
