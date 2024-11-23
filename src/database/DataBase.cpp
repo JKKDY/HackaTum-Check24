@@ -13,6 +13,14 @@ namespace db {
 	Offers DataBase::get(const GetRequest &req) {
 		Offers ret;
 
+		std::vector<char> vec;
+		vec.reserve(1024*1024);
+		std::cout << "Davor" << std::endl;
+
+		std::cout << sizeof(offers[0]) << std::endl;
+		std::cout << "Davor x2" << std::endl;
+
+
 		std::vector<Offer> valid_offers;
 		valid_offers.reserve(offers.size());
 
@@ -31,6 +39,7 @@ namespace db {
 				req.only_vollkasko <= offer.has_vollkasko &&
 				req.min_free_kilometer <= offer.free_kilometers
 				) {
+				std::cout << "in the loop" << std::endl;
 				valid_offers.push_back(offer);
 				if (offer.number_seats > max_seats) {
 					max_seats = offer.number_seats;

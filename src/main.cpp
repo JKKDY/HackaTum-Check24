@@ -229,6 +229,7 @@ void queryMemory() {
 
 
 int main() {
+	std::cout << sizeof(Offer) << std::endl;
 	queryMemory();
 	DataBase database;
 	OffersHandler offersHandler(database);
