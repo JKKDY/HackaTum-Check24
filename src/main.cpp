@@ -78,7 +78,7 @@ public:
 
     try {
     	std::cout << request.query().as_str() << std::endl;
-        auto body = json::parse(request.body());
+        // auto body = json::parse(request.body());
         // Parse the required fields
         // GetRequest get_request = {
         //         .region_id = body.at("region_id").get<int>(),  // Required
