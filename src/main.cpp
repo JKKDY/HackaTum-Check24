@@ -73,8 +73,29 @@ public:
 		}
 	}
 
+
 private:
 	DataBase &database;
+};
+
+
+class GeneralRequestHandler : public Pistache::Http::Handler {
+public:
+	HTTP_PROTOTYPE(GeneralRequestHandler)
+
+	// This function will handle all requests
+	void onRequest(const Pistache::Http::Request &request, Pistache::Http::ResponseWriter response) override {
+		std::cout << "Received request: " << request.resource() << " Method: " << request.method() << std::endl;
+
+		// Example: Custom logic based on the endpoint or method
+		if (request.method() == Pistache::Http::Method::Get) {
+			response.send(Pistache::Http::Code::Ok, "This is a GET request\n");
+		} else if (request.method() == Pistache::Http::Method::Post) {
+			response.send(Pistache::Http::Code::Ok, "This is a POST request\n");
+		} else {
+			response.send(Pistache::Http::Code::Method_Not_Allowed, "Method not allowed\n");
+		}
+	}
 };
 
 
@@ -84,27 +105,46 @@ void setupRoutes(Pistache::Rest::Router &router, OffersHandler& offersHandler) {
 }
 
 int main() {
-	DataBase database;
-	OffersHandler offersHandler(database);
+	// Set up the address
+	Pistache::Address address("*:80");
 
-	Pistache::Address address("*:80"); // Bind to all network interfaces on port 80
-	Pistache::Http::Endpoint server(address);
+	// Create the server endpoint
+	auto server = std::make_shared<Pistache::Http::Endpoint>(address);
 
-	Pistache::Rest::Router router;
-	setupRoutes(router, offersHandler);
 
-	auto options = Pistache::Http::Endpoint::options()
-	.threads(1)
-	.flags(Pistache::Tcp::Options::ReuseAddr);
+	// Set the general handler for all requests
+	server->setHandler(Pistache::Http::make_handler<GeneralRequestHandler>());
 
-	server.init(options);
+	// Start the server
+	std::cout << "Server running on port 80..." << std::endl;
+	server->serve();
 
-	server.setHandler(router.handler());
-
-	std::cout << "Starting server on port 80..." << std::endl;
-
-	server.serve();
-	server.shutdown();
+	// Stop the server gracefully
+	server->shutdown();
 
 	return 0;
+
+	// DataBase database;
+	// OffersHandler offersHandler(database);
+	//
+	// Pistache::Address address("*:80"); // Bind to all network interfaces on port 80
+	// Pistache::Http::Endpoint server(address);
+	//
+	// Pistache::Rest::Router router;
+	// setupRoutes(router, offersHandler);
+	//
+	// auto options = Pistache::Http::Endpoint::options()
+	// .threads(1)
+	// .flags(Pistache::Tcp::Options::ReuseAddr);
+	//
+	// server.init(options);
+	//
+	// server.setHandler(router.handler());
+	//
+	// std::cout << "Starting server on port 80..." << std::endl;
+	//
+	// server.serve();
+	// server.shutdown();
+	//
+	// return 0;
 }
