@@ -127,7 +127,7 @@ namespace db {
 			ret.free_kilometer_ranges[free_km_idx].free_kilometer_range_count++;
 		}
 
-		std::cout << "Ok x 4" << valid_offers.size()  << std::endl;
+		std::cout << "Ok x 4 " << valid_offers.size()  << std::endl;
 
 		return ret;
 	}

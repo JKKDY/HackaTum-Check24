@@ -4,6 +4,10 @@
 #include <pistache/http.h>
 #include <pistache/router.h>
 #include <string>
+#include <limits>
+
+#define MAX std::numeric_limits<double>::max()
+#define MIN std::numeric_limits<double>::min()
 
 #include "database/DataBase.h"
 
@@ -103,10 +107,10 @@ public:
 				.min_free_kilometer_width = std::stoi(request.query().get("minFreeKilometerWidth").value_or("100")),
 
 				.min_number_seats = std::stoi(request.query().get("minNumberSeats").value_or("0")),
-				.min_price = std::stoi(request.query().get("minPrice").value_or("0")),
-				.max_price = std::stoi(request.query().get("maxPrice").value_or("0")),
-				.car_type = car_type_from_string(request.query().get("carType").value_or("all")),
-				.only_vollkasko = request.query().get("onlyVollkasko").value_or("false") == "true",
+				.min_price = std::stoi(request.query().get("minPrice").value_or(MIN)),
+				.max_price = std::stoi(request.query().get("maxPrice").value_or(MAX)),
+				.car_type = car_type_from_string(request.query().get("carType").value_or(CarType::ALL)),
+				.only_vollkasko = request.query().get("onlyVollkasko").value_or(false) == "true",
 				.min_free_kilometer = std::stoi(request.query().get("minFreeKilometer").value_or("0"))};
 
 			std::cout << "OFFER" << std::endl;
@@ -141,6 +145,7 @@ public:
 
 			// Serialize the `price_ranges` field
 			for (const auto &range : offers.price_ranges) {
+				if (range.price_range_count == 0) continue;
 				response_json["price_ranges"].push_back({{"price_range_start", range.price_range_start},
 														 {"price_range_end", range.price_range_end},
 														 {"price_range_count", range.price_range_count}});
@@ -148,11 +153,13 @@ public:
 
 			// Serialize the `seat_counts` field
 			for (const auto &seat : offers.seat_counts) {
+				if (seat.count == 0) continue;
 				response_json["seat_counts"].push_back({{"number_seats", seat.number_seats}, {"count", seat.count}});
 			}
 
 			// Serialize the `free_kilometer_ranges` field
 			for (const auto &range : offers.free_kilometer_ranges) {
+				if (range.free_kilometer_range_count == 0) continue;
 				response_json["free_kilometer_ranges"].push_back(
 					{{"free_kilometer_range_start", range.free_kilometer_range_start},
 					 {"free_kilometer_range_end", range.free_kilometer_range_end},
