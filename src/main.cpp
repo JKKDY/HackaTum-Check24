@@ -80,25 +80,69 @@ public:
     	std::cout << request.query().as_str() << std::endl;
         auto body = json::parse(request.body());
         // Parse the required fields
-        GetRequest get_request = {
-                .region_id = body.at("region_id").get<int>(),  // Required
-                .time_range_start = body.at("time_range_start").get<int64_t>(),  // Required
-                .time_range_end = body.at("time_range_end").get<int64_t>(),  // Required
-                .number_days = body.at("number_days").get<int>(),  // Required
+        // GetRequest get_request = {
+        //         .region_id = body.at("region_id").get<int>(),  // Required
+        //         .time_range_start = body.at("time_range_start").get<int64_t>(),  // Required
+        //         .time_range_end = body.at("time_range_end").get<int64_t>(),  // Required
+        //         .number_days = body.at("number_days").get<int>(),  // Required
+        //
+        //         .sort_order = body.value("sort_order", SortOrder::ASCENDING),  // Optional with default
+        //         .page = body.value("page", 1),  // Optional with default
+        //         .page_size = body.value("page_size", 10),  // Optional with default
+        //         .price_range_width = body.value("price_range_width", 1000),  // Optional with default
+        //         .min_free_kilometer_width = body.value("min_free_kilometer_width", 100),  // Optional with default
+        //
+        //         .min_number_seats = body.value("min_number_seats", 0),  // Optional
+        //         .min_price = body.value("min_price", 0),  // Optional
+        //         .max_price = body.value("max_price", 0),  // Optional
+        //         .car_type = body.value("car_type", CarType::ALL),  // Optional
+        //         .only_vollkasko = body.value("only_vollkasko", false),  // Optional
+        //         .min_free_kilometer = body.value("min_free_kilometer", 0)  // Optional
+        // };
 
-                .sort_order = body.value("sort_order", SortOrder::ASCENDING),  // Optional with default
-                .page = body.value("page", 1),  // Optional with default
-                .page_size = body.value("page_size", 10),  // Optional with default
-                .price_range_width = body.value("price_range_width", 1000),  // Optional with default
-                .min_free_kilometer_width = body.value("min_free_kilometer_width", 100),  // Optional with default
+  //   	GetRequest get_request = {
+  //   		.region_id = request.query().get("region_id").getOrElse("-1"),                // Required
+		// 	.time_range_start = request.query().get("time_range_start").getOrElse("0"),  // Required
+		// 	.time_range_end = request.query().get("time_range_end").getOrElse("0"),      // Required
+		// 	.number_days = request.query().get("number_days").getOrElse("0"),            // Required
+	 //
+		// 	.sort_order = request.query().get("sort_order").getOrElse("ASCENDING") == "ASCENDING"
+		// 		? SortOrder::ASCENDING
+		// 		: SortOrder::DESCENDING,  // Optional with default
+		// 	.page = std::stoi(request.query().get("page").getOrElse("1")),               // Optional with default
+		// 	.page_size = std::stoi(request.query().get("page_size").getOrElse("10")),    // Optional with default
+		// 	.price_range_width = std::stoi(request.query().get("price_range_width").getOrElse("1000")),  // Optional
+		// 	.min_free_kilometer_width = std::stoi(request.query().get("min_free_kilometer_width").getOrElse("100")),  // Optional
+	 //
+		// 	.min_number_seats = std::stoi(request.query().get("min_number_seats").getOrElse("0")),        // Optional
+		// 	.min_price = std::stod(request.query().get("min_price").getOrElse("0")),                     // Optional
+		// 	.max_price = std::stod(request.query().get("max_price").getOrElse("0")),                     // Optional
+		// 	.car_type = car_type_from_string(request.query().get("car_type").getOrElse("ALL")),          // Optional
+		// 	.only_vollkasko = request.query().get("only_vollkasko").getOrElse("false") == "true",        // Optional
+		// 	.min_free_kilometer = std::stoi(request.query().get("min_free_kilometer").getOrElse("0"))    // Optional
+		// };
 
-                .min_number_seats = body.value("min_number_seats", 0),  // Optional
-                .min_price = body.value("min_price", 0),  // Optional
-                .max_price = body.value("max_price", 0),  // Optional
-                .car_type = body.value("car_type", CarType::ALL),  // Optional
-                .only_vollkasko = body.value("only_vollkasko", false),  // Optional
-                .min_free_kilometer = body.value("min_free_kilometer", 0)  // Optional
-        };
+    	GetRequest get_request = {
+    		.region_id = std::stoi(request.query().get("region_id").value_or("-1")),
+			.time_range_start = std::stoll(request.query().get("time_range_start").value_or("0")),
+			.time_range_end = std::stoll(request.query().get("time_range_end").value_or("0")),
+			.number_days = std::stoi(request.query().get("number_days").value_or("0")),
+
+			.sort_order = request.query().get("sort_order").value_or("ASCENDING") == "ASCENDING"
+						  ? SortOrder::ASCENDING
+						  : SortOrder::DESCENDING,
+			.page = std::stoi(request.query().get("page").value_or("1")),
+			.page_size = std::stoi(request.query().get("page_size").value_or("10")),
+			.price_range_width = std::stoi(request.query().get("price_range_width").value_or("1000")),
+			.min_free_kilometer_width = std::stoi(request.query().get("min_free_kilometer_width").value_or("100")),
+
+			.min_number_seats = std::stoi(request.query().get("min_number_seats").value_or("0")),
+			.min_price = std::stoi(request.query().get("min_price").value_or("0")),
+			.max_price = std::stoi(request.query().get("max_price").value_or("0")),
+			.car_type = car_type_from_string(request.query().get("car_type").value_or("ALL")),
+			.only_vollkasko = request.query().get("only_vollkasko").value_or("false") == "true",
+			.min_free_kilometer = std::stoi(request.query().get("min_free_kilometer").value_or("0"))
+		};
 
     	std::cout << "OFFER" << std::endl;
 
