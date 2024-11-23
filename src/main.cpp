@@ -109,7 +109,7 @@ public:
 				.min_number_seats = std::stoi(request.query().get("minNumberSeats").value_or("0")),
 				.min_price = std::stoi(request.query().get("minPrice").value_or("-1")),
 				.max_price = std::stoi(request.query().get("maxPrice").value_or("-1")),
-				.car_type = car_type_from_string(request.query().get("carType").value_or(CarType::ALL)),
+				.car_type = car_type_from_string(request.query().get("carType").value_or("all")),
 				.only_vollkasko = request.query().get("onlyVollkasko").value_or("false") == "true",
 				.min_free_kilometer = std::stoi(request.query().get("minFreeKilometer").value_or("0"))};
 
