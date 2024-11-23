@@ -17,7 +17,12 @@ namespace db {
 		vec.reserve(1024*1024);
 		std::cout << "Davor" << std::endl;
 
-		std::cout << sizeof(offers[0]) << std::endl;
+		std::cout << "Size:" << std::endl;
+		for (const auto &offer : offers) {
+			std::cout << sizeof(offer) << std::endl;
+		}
+		std::cout << sizeof(offers.size()) << std::endl;
+
 		std::cout << "Davor x2" << std::endl;
 
 
