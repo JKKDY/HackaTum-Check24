@@ -48,7 +48,7 @@ public:
 				response.send(Pistache::Http::Code::Bad_Request, "Missing 'offers' field in JSON");
 				return;
 			}
-			std::cout << "Pre Parse" << std::endl;
+			std::cout << "Pre Parse" << request.body() <<std::endl;
 			//
 			// Process each offer in the 'offers' array
 			const auto &offersArray = body["offers"];
