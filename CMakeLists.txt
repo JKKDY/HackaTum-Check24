@@ -27,7 +27,8 @@ file(GLOB_RECURSE MY_SRC
 
 # create make target
 add_executable(HackCheck ${MY_SRC}
-        src/database/DataBase.h)
+        src/database/DataBase.h
+        src/io/Endpoints.h)
 
 # set cxx standard.
 target_compile_features(HackCheck
