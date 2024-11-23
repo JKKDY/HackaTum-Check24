@@ -64,7 +64,7 @@ public:
 					};
 
 				std::cout << "New offer: "<<offer.id << std::endl;
-				database.add_offer(offer);
+				// database.add_offer(offer);
 				// Add the offer to the in-memory vector
 			}
 
