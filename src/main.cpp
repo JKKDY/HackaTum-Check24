@@ -100,48 +100,26 @@ public:
         //         .min_free_kilometer = body.value("min_free_kilometer", 0)  // Optional
         // };
 
-  //   	GetRequest get_request = {
-  //   		.region_id = request.query().get("region_id").getOrElse("-1"),                // Required
-		// 	.time_range_start = request.query().get("time_range_start").getOrElse("0"),  // Required
-		// 	.time_range_end = request.query().get("time_range_end").getOrElse("0"),      // Required
-		// 	.number_days = request.query().get("number_days").getOrElse("0"),            // Required
-	 //
-		// 	.sort_order = request.query().get("sort_order").getOrElse("ASCENDING") == "ASCENDING"
-		// 		? SortOrder::ASCENDING
-		// 		: SortOrder::DESCENDING,  // Optional with default
-		// 	.page = std::stoi(request.query().get("page").getOrElse("1")),               // Optional with default
-		// 	.page_size = std::stoi(request.query().get("page_size").getOrElse("10")),    // Optional with default
-		// 	.price_range_width = std::stoi(request.query().get("price_range_width").getOrElse("1000")),  // Optional
-		// 	.min_free_kilometer_width = std::stoi(request.query().get("min_free_kilometer_width").getOrElse("100")),  // Optional
-	 //
-		// 	.min_number_seats = std::stoi(request.query().get("min_number_seats").getOrElse("0")),        // Optional
-		// 	.min_price = std::stod(request.query().get("min_price").getOrElse("0")),                     // Optional
-		// 	.max_price = std::stod(request.query().get("max_price").getOrElse("0")),                     // Optional
-		// 	.car_type = car_type_from_string(request.query().get("car_type").getOrElse("ALL")),          // Optional
-		// 	.only_vollkasko = request.query().get("only_vollkasko").getOrElse("false") == "true",        // Optional
-		// 	.min_free_kilometer = std::stoi(request.query().get("min_free_kilometer").getOrElse("0"))    // Optional
-		// };
-
     	GetRequest get_request = {
-    		.region_id = std::stoi(request.query().get("region_id").value_or("-1")),
-			.time_range_start = std::stoll(request.query().get("time_range_start").value_or("0")),
-			.time_range_end = std::stoll(request.query().get("time_range_end").value_or("0")),
-			.number_days = std::stoi(request.query().get("number_days").value_or("0")),
+    		.region_id = std::stoi(request.query().get("regionID").value_or("-1")),
+			.time_range_start = std::stoll(request.query().get("timeRangeStart").value_or("0")),
+			.time_range_end = std::stoll(request.query().get("timeRangeEnd").value_or("0")),
+			.number_days = std::stoi(request.query().get("numberDays").value_or("0")),
 
-			.sort_order = request.query().get("sort_order").value_or("ASCENDING") == "ASCENDING"
+			.sort_order = request.query().get("sortOrder").value_or("price-asc") == "price-asc"
 						  ? SortOrder::ASCENDING
 						  : SortOrder::DESCENDING,
 			.page = std::stoi(request.query().get("page").value_or("1")),
-			.page_size = std::stoi(request.query().get("page_size").value_or("10")),
-			.price_range_width = std::stoi(request.query().get("price_range_width").value_or("1000")),
-			.min_free_kilometer_width = std::stoi(request.query().get("min_free_kilometer_width").value_or("100")),
+			.page_size = std::stoi(request.query().get("pageSize").value_or("10")),
+			.price_range_width = std::stoi(request.query().get("priceRangeWidth").value_or("1000")),
+			.min_free_kilometer_width = std::stoi(request.query().get("minFreeKilometerWidth").value_or("100")),
 
-			.min_number_seats = std::stoi(request.query().get("min_number_seats").value_or("0")),
-			.min_price = std::stoi(request.query().get("min_price").value_or("0")),
-			.max_price = std::stoi(request.query().get("max_price").value_or("0")),
-			.car_type = car_type_from_string(request.query().get("car_type").value_or("ALL")),
-			.only_vollkasko = request.query().get("only_vollkasko").value_or("false") == "true",
-			.min_free_kilometer = std::stoi(request.query().get("min_free_kilometer").value_or("0"))
+			.min_number_seats = std::stoi(request.query().get("minNumberSeats").value_or("0")),
+			.min_price = std::stoi(request.query().get("minPrice").value_or("0")),
+			.max_price = std::stoi(request.query().get("maxPrice").value_or("0")),
+			.car_type = car_type_from_string(request.query().get("carType").value_or("all")),
+			.only_vollkasko = request.query().get("onlyVollkasko").value_or("false") == "true",
+			.min_free_kilometer = std::stoi(request.query().get("minFreeKilometer").value_or("0"))
 		};
 
     	std::cout << "OFFER" << std::endl;
