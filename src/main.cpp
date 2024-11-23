@@ -25,6 +25,14 @@ CarType car_type_from_string(const std::string &car_type_str) {
 }
 
 
+std::array<char, 256> string_to_array(const std::string &str) {
+	std::array<char, 256> arr{0};
+	// std::copy(str.begin(), str.end(), arr.begin());
+
+	std::size_t copyLength = std::min(str.size(), arr.size());
+	std::copy_n(str.begin(), copyLength, arr.begin());
+}
+
 // Handler for the Offers API
 class OffersHandler {
 public:
@@ -51,13 +59,7 @@ public:
 				Offer offer = {.start_date = offerJson["startDate"].get<int64_t>(),
 							   .end_date = offerJson["endDate"].get<int64_t>(),
 							   .id = offerJson["ID"].get<std::string>(),
-							   .data = {},
-								   // [&offerJson] {
-									  //  std::array<char, 256> arr{};
-									  //  std::string data_str = offerJson["data"].get<std::string>();
-									  //  std::copy(data_str.begin(), data_str.end(), arr.begin());
-									  //  return arr;
-								   // }(),
+							   .data = string_to_array(offerJson["data"].get<std::string>()),
 							   .region_id = offerJson["mostSpecificRegionID"].get<int>(),
 							   .number_seats = offerJson["numberSeats"].get<int>(),
 							   .price = offerJson["price"].get<int>(),
@@ -65,8 +67,8 @@ public:
 							   .car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
 							   .has_vollkasko = offerJson["hasVollkasko"].get<bool>()};
 
-				// std::cout << "New offer added: " << offer.id << std::endl;
-				// database.add_offer(offer);
+				std::cout << "New offer added: " << offer.id << std::endl;
+				database.add_offer(offer);
 			}
 			response.send(Pistache::Http::Code::Ok, "Offers added successfully");
 			std::cout << "Done with adding offers" << std::endl;
