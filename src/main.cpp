@@ -77,6 +77,7 @@ public:
         std::cout << "OffersHandler::getOffers" << std::endl;
 
     try {
+    	std::cout << request.body() << std::endl;
         auto body = json::parse(request.body());
         // Parse the required fields
         GetRequest get_request = {
