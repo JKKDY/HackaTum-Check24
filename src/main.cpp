@@ -76,15 +76,6 @@ public:
 	}
 
 
-	void getOffer() {
-
-		GetRequest request;
-
-		offers = database.get(request);
-
-		response.send(kdhglifdghjl)
-	}
-
 
 	// DELETE /api/offers - Clears all offers
 	void deleteOffers(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {

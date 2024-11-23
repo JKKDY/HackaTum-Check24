@@ -50,8 +50,8 @@ namespace db {
 		int min_free_kilometer_width;    // Required: The width of the min free kilometer in km
 
 		int min_number_seats = 0;        // Optional: Minimum number of seats the returned cars each have
-		int min_price = 0;          // Optional: Minimum (inclusive) price the offers have in cents
-		int max_price = 0;          // Optional: Maximum (exclusive) price the offers have in cents
+		int min_price = 0;				// Optional: Minimum (inclusive) price the offers have in cents
+		int max_price = 0;				// Optional: Maximum (exclusive) price the offers have in cents
 		CarType car_type = CarType::ALL; // Optional: Car type (small, sports, luxury, family)
 		bool only_vollkasko = false;     // Optional: Whether only offers with Vollkasko are returned
 		int min_free_kilometer = 0;      // Optional: Minimum number of kilometers included for free
@@ -79,7 +79,7 @@ namespace db {
 
 		struct SeatsCount {
 			int number_seats;               //The number of seats the cars have
-			int seat_count = 0;                 //The number of offers with the given number of seats
+			int count = 0;                 //The number of offers with the given number of seats
 		};
 
 		struct FreeKilometerRange {

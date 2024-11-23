@@ -13,6 +13,9 @@ namespace db {
 
 		std::vector<Offer> valid_offers;
 
+		int max_seats = 0;
+		int max_free_km = 0;
+
 		for (auto offer : offers) {
 			if (offer.region_id == req.region_id &&
 				req.time_range_start <= offer.start_date && offer.end_date <= req.time_range_end &&
@@ -21,9 +24,15 @@ namespace db {
 				req.min_price <= offer.price && offer.price < req.max_price &&
 				req.car_type & offer.car_type &&
 				req.only_vollkasko <= offer.has_vollkasko &&
-				req.min_free_kilometer < offer.free_kilometers
+				req.min_free_kilometer <= offer.free_kilometers
 				) {
 				valid_offers.push_back(offer);
+				if (offer.number_seats > max_seats) {
+					max_seats = offer.number_seats;
+				}
+				if (offer.free_kilometers > max_free_km) {
+					max_free_km = offer.free_kilometers;
+				}
 			}
 		}
 
@@ -36,13 +45,20 @@ namespace db {
 
 		auto selected_offers = offers | std::views::drop(min_idx) | std::views::take(max_idx - min_idx);
 
-
+		// create price bins
 		for (int i = req.min_price; i < req.max_price; i += req.price_range_width) {
-			const int start_price = i;
-			const int end_price = std::min(i + req.price_range_width, req.max_price);
-			ret.price_ranges.push_back(Offers::PriceRanges{start_price, end_price});
+			ret.price_ranges.emplace_back(i, i + req.price_range_width);
 		}
 
+		// create free Km bins
+		for (int i = req.min_free_kilometer; i < max_free_km; i += req.min_free_kilometer) {
+			ret.free_kilometer_ranges.emplace_back(i, i + req.min_free_kilometer, 0);
+		}
+
+		// create seats bins
+		for (int i = req.min_number_seats; i < max_seats; i++) {
+			ret.seat_counts.push_back(Offers::SeatsCount{i, 0});
+		}
 
 		for (auto x : selected_offers) {
 			// offers
@@ -65,17 +81,17 @@ namespace db {
 			}
 
 			// price ranges
-			int price_idx = (x.price - req.min_price) / req.price_range_width;
+			const int price_idx = (x.price - req.min_price) / req.price_range_width;
 			ret.price_ranges[price_idx].price_range_count++;
 
-			if (x.number_seats > ret.seat_counts.size()) {
-				ret.seat_counts.resize(x.number_seats);
-			}
-			offers
+			//seats count
+			ret.seat_counts[x.number_seats - 1].count ++;
+
+			// freeKmrange
+			const int free_km_idx = (x.free_kilometers - req.min_free_kilometer) / req.min_free_kilometer_width;
+			ret.free_kilometer_ranges[free_km_idx].free_kilometer_range_count++;
 		}
 
-		// freeKmrange
-		//seats_count
 
 		return ret;
 	}
