@@ -73,6 +73,8 @@ public:
 			std::cout << "eeeeeeeeeeeeee" << e.what() << std::endl;
 			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
 		}
+		std::cout << " Really Done with adding offers" << std::endl;
+
 	}
 
 
@@ -193,7 +195,7 @@ void setupRoutes(Pistache::Rest::Router &router, OffersHandler &offersHandler) {
 	using namespace Pistache::Rest;
 	Routes::Post(router, "/api/offers", Routes::bind(&OffersHandler::postOffers, &offersHandler));
 	Routes::Delete(router, "/api/offers", Routes::bind(&OffersHandler::deleteOffers, &offersHandler));
-	Routes::Get(router, "/api/offers", Routes::bind(&OffersHandler::getOffers, &offersHandler));
+	// Routes::Get(router, "/api/offers", Routes::bind(&OffersHandler::getOffers, &offersHandler));
 }
 
 #include <fstream>
