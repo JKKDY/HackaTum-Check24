@@ -58,17 +58,17 @@ namespace db {
 			}
 		}
 
-		std::cout << "Ok x 2" << valid_offers.size()  << std::endl;
+		std::cout << "Ok x 2 " << valid_offers.size()  << std::endl;
 
 
 		int min_idx = req.page * req.page_size;
 		int max_idx = (req.page + 1) * req.page_size;
 
-		std::ranges::sort(offers, [&req](const Offer& a, const Offer& b) {
+		std::ranges::sort(valid_offers, [&req](const Offer& a, const Offer& b) {
 				return req.sort_order == SortOrder::ASCENDING ? a.price < b.price : a.price > b.price;
 		});
 
-		auto selected_offers = offers | std::views::drop(min_idx) | std::views::take(max_idx - min_idx);
+		auto selected_offers = valid_offers | std::views::drop(min_idx) | std::views::take(max_idx - min_idx);
 
 		// create price bins
 		std::cout << req.min_price << "  PRICE   " << req.max_price << std::endl;
