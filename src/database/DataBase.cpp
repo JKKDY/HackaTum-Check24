@@ -14,6 +14,7 @@ namespace db {
 		Offers ret;
 
 		std::vector<Offer> valid_offers;
+		valid_offers.reserve(offers.size());
 
 		int max_seats = 0;
 		int max_free_km = 0;
