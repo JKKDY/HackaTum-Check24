@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include <pistache/http.h>
 #include <pistache/router.h>
 
@@ -11,7 +12,7 @@ namespace db::io {
 		void postOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
 		void getOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
 	private:
-		Offer read_offer();
+		Offer read_offer(const nlohmann::basic_json<> & offerJson);
 		DataBase & database;
 	};
 }

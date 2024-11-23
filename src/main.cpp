@@ -26,7 +26,7 @@ CarType car_type_from_string(const std::string &car_type_str) {
 
 
 std::array<char, 256> string_to_array(const std::string &str) {
-	std::array<char, 256> arr{0};
+	std::array<char, 256> arr{};
 
 	const std::size_t copyLength = std::min(str.size(), arr.size());
 	std::copy_n(str.begin(), copyLength, arr.begin());

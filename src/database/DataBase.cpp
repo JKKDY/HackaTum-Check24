@@ -91,15 +91,16 @@ namespace db {
 		for (auto x : selected_offers) {
 			// offers
 			ret.offers.push_back(Offers::Offer{x.id, x.data});
-
+			std::cout << "loop 1" << std::endl;
 			// car type
 			switch (x.car_type) {
-			case CarType::SMALL: ret.car_type_counts.small_count++; break;
-			case CarType::FAMILY: ret.car_type_counts.family_count++; break;
-			case CarType::LUXURY: ret.car_type_counts.luxury_count++; break;
-			case CarType::SPORTS: ret.car_type_counts.sports_count++; break;
-			default: break;
+				case CarType::SMALL: ret.car_type_counts.small_count++; break;
+				case CarType::FAMILY: ret.car_type_counts.family_count++; break;
+				case CarType::LUXURY: ret.car_type_counts.luxury_count++; break;
+				case CarType::SPORTS: ret.car_type_counts.sports_count++; break;
+				default: break;
 			}
+			std::cout << "loop 1" << std::endl;
 
 			// vollkasko
 			if (x.has_vollkasko) {
@@ -107,16 +108,20 @@ namespace db {
 			}else {
 				ret.voll_kasko_count.vollkasko_false_count++;
 			}
+			std::cout << "loop 2" << std::endl;
 
 			// price ranges
 			const int price_idx = (x.price - req.min_price) / req.price_range_width;
+			std::cout << "loop 3: idx" << price_idx << "price ranges size: " << ret.price_ranges.size() << std::endl;
 			ret.price_ranges[price_idx].price_range_count++;
 
 			//seats count
+			std::cout << "loop 4 # seats" << x.number_seats << " size: " << ret.seat_counts.size() <<std::endl;
 			ret.seat_counts[x.number_seats - 1].count ++;
 
 			// freeKmrange
 			const int free_km_idx = (x.free_kilometers - req.min_free_kilometer) / req.min_free_kilometer_width;
+			std::cout << "loop 5 # free km" << free_km_idx << " size: " << ret.free_kilometer_ranges.size() <<std::endl;
 			ret.free_kilometer_ranges[free_km_idx].free_kilometer_range_count++;
 		}
 
