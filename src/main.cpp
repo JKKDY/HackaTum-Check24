@@ -105,9 +105,60 @@ public:
 
             Offers offers = database.get(get_request);
 
+            // Convert the Offers object to JSON
+            json response_json = {
+                    {"offers", json::array()},
+                    {"price_ranges", json::array()},
+                    {"car_type_counts", {
+                                       {"small_count", offers.car_type_counts.small_count},
+                                       {"sports_count", offers.car_type_counts.sports_count},
+                                       {"luxury_count", offers.car_type_counts.luxury_count},
+                                       {"family_count", offers.car_type_counts.family_count}
+                               }},
+                    {"seat_counts", json::array()},
+                    {"free_kilometer_ranges", json::array()},
+                    {"voll_kasko_count", {
+                                       {"vollkasko_true_count", offers.voll_kasko_count.vollkasko_true_count},
+                                       {"vollkasko_false_count", offers.voll_kasko_count.vollkasko_false_count}
+                               }}
+            };
 
+            // Serialize the `offers` field
+            for (const auto& offer : offers.offers) {
+                response_json["offers"].push_back({
+                                                          {"id", offer.id},
+                                                          {"data", std::string(offer.data.begin(), offer.data.end())}  // Convert array<char, 256> to string
+                                                  });
+            }
 
-            response.send(Pistache::Http::Code::Ok, offers.dump()); // Assuming offers is JSON-compatible
+            // Serialize the `price_ranges` field
+            for (const auto& range : offers.price_ranges) {
+                response_json["price_ranges"].push_back({
+                                                                {"price_range_start", range.price_range_start},
+                                                                {"price_range_end", range.price_range_end},
+                                                                {"price_range_count", range.price_range_count}
+                                                        });
+            }
+
+            // Serialize the `seat_counts` field
+            for (const auto& seat : offers.seat_counts) {
+                response_json["seat_counts"].push_back({
+                                                               {"number_seats", seat.number_seats},
+                                                               {"count", seat.count}
+                                                       });
+            }
+
+            // Serialize the `free_kilometer_ranges` field
+            for (const auto& range : offers.free_kilometer_ranges) {
+                response_json["free_kilometer_ranges"].push_back({
+                                                                         {"free_kilometer_range_start", range.free_kilometer_range_start},
+                                                                         {"free_kilometer_range_end", range.free_kilometer_range_end},
+                                                                         {"free_kilometer_range_count", range.free_kilometer_range_count}
+                                                                 });
+            }
+
+            // Send the JSON response
+            response.send(Pistache::Http::Code::Ok, response_json.dump());
         }
         catch (const json::exception& e) {
             // Handle JSON parsing errors or missing fields
