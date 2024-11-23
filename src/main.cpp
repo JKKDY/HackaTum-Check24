@@ -45,25 +45,25 @@ public:
 			// Process each offer in the 'offers' array
 			const auto &offersArray = body["offers"];
 			for (const auto &offerJson : offersArray) {
-				auto start_date = offerJson["startDate"].get<int64_t>();
-				std::cout << start_date << std::endl;
+				// auto start_date = offerJson["startDate"].get<int64_t>();
+				// std::cout << start_date << std::endl;
 
-				// Offer offer = {.start_date = offerJson["startDate"].get<int64_t>(),
-				// 			   .end_date = offerJson["endDate"].get<int64_t>(),
-				// 			   .id = offerJson["ID"].get<std::string>(),
-				// 			   .data =
-				// 				   [&offerJson] {
-				// 					   std::array<char, 256> arr{};
-				// 					   std::string data_str = offerJson["data"].get<std::string>();
-				// 					   std::copy(data_str.begin(), data_str.end(), arr.begin());
-				// 					   return arr;
-				// 				   }(),
-				// 			   .region_id = offerJson["mostSpecificRegionID"].get<int>(),
-				// 			   .number_seats = offerJson["numberSeats"].get<int>(),
-				// 			   .price = offerJson["price"].get<int>(),
-				// 			   .free_kilometers = offerJson["freeKilometers"].get<int>(),
-				// 			   .car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
-				// 			   .has_vollkasko = offerJson["hasVollkasko"].get<bool>()};
+				Offer offer = {.start_date = offerJson["startDate"].get<int64_t>(),
+							   .end_date = offerJson["endDate"].get<int64_t>(),
+							   .id = offerJson["ID"].get<std::string>(),
+							   .data = {},
+								   // [&offerJson] {
+									  //  std::array<char, 256> arr{};
+									  //  std::string data_str = offerJson["data"].get<std::string>();
+									  //  std::copy(data_str.begin(), data_str.end(), arr.begin());
+									  //  return arr;
+								   // }(),
+							   .region_id = offerJson["mostSpecificRegionID"].get<int>(),
+							   .number_seats = offerJson["numberSeats"].get<int>(),
+							   .price = offerJson["price"].get<int>(),
+							   .free_kilometers = offerJson["freeKilometers"].get<int>(),
+							   .car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
+							   .has_vollkasko = offerJson["hasVollkasko"].get<bool>()};
 
 				// std::cout << "New offer added: " << offer.id << std::endl;
 				// database.add_offer(offer);
