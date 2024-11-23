@@ -71,6 +71,8 @@ namespace db {
 		auto selected_offers = offers | std::views::drop(min_idx) | std::views::take(max_idx - min_idx);
 
 		// create price bins
+		std::cout << req.min_price << "  PRICE   " << req.max_price << std::endl;
+		std::cout << req.price_range_width << std::endl;
 		for (int i = req.min_price; i < req.max_price; i += req.price_range_width) {
 			ret.price_ranges.emplace_back(i, i + req.price_range_width);
 		}
@@ -112,16 +114,16 @@ namespace db {
 
 			// price ranges
 			const int price_idx = (x.price - req.min_price) / req.price_range_width;
-			std::cout << "loop 3: idx" << price_idx << "price ranges size: " << ret.price_ranges.size() << std::endl;
+			std::cout << "loop 3: idx " << price_idx << " price ranges size: " << ret.price_ranges.size() << std::endl;
 			ret.price_ranges[price_idx].price_range_count++;
 
 			//seats count
-			std::cout << "loop 4 # seats" << x.number_seats << " size: " << ret.seat_counts.size() <<std::endl;
+			std::cout << "loop 4 # seats " << x.number_seats << " size: " << ret.seat_counts.size() <<std::endl;
 			ret.seat_counts[x.number_seats - 1].count ++;
 
 			// freeKmrange
 			const int free_km_idx = (x.free_kilometers - req.min_free_kilometer) / req.min_free_kilometer_width;
-			std::cout << "loop 5 # free km" << free_km_idx << " size: " << ret.free_kilometer_ranges.size() <<std::endl;
+			std::cout << "loop 5 # free km " << free_km_idx << " size: " << ret.free_kilometer_ranges.size() <<std::endl;
 			ret.free_kilometer_ranges[free_km_idx].free_kilometer_range_count++;
 		}
 

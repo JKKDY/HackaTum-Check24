@@ -186,6 +186,7 @@ public:
 			response.send(Pistache::Http::Code::Ok, "Data was cleaned up");
 		}
 		catch (const std::exception &e) {
+			std::cout << "Error" << e.what() <<std::endl;
 			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
 		}
 	}
