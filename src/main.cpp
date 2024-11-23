@@ -77,8 +77,8 @@ public:
         std::cout << "OffersHandler::getOffers" << std::endl;
 
     try {
-    	std::cout << request.body() << std::endl;
-        auto body = json::parse(request.body());
+    	std::cout << request.query().as_str() << std::endl;
+        auto body = json::parse(request.query());
         // Parse the required fields
         GetRequest get_request = {
                 .region_id = body.at("region_id").get<int>(),  // Required
