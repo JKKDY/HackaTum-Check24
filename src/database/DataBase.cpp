@@ -1,7 +1,9 @@
 
+#include "DataBase.h"
 #include <algorithm>
 #include <ranges>
-#include "DataBase.h"
+
+#include <iostream>
 
 namespace db {
 
@@ -15,6 +17,8 @@ namespace db {
 
 		int max_seats = 0;
 		int max_free_km = 0;
+
+		std::cout << "Ok" << std::endl;
 
 		for (auto offer : offers) {
 			if (offer.region_id == req.region_id &&
@@ -35,6 +39,9 @@ namespace db {
 				}
 			}
 		}
+
+		std::cout << "Ok x 2" << valid_offers.size()  << std::endl;
+
 
 		int min_idx = req.page * req.page_size;
 		int max_idx = (req.page + 1) * req.page_size;
@@ -59,6 +66,9 @@ namespace db {
 		for (int i = req.min_number_seats; i < max_seats; i++) {
 			ret.seat_counts.push_back(Offers::SeatsCount{i, 0});
 		}
+
+		std::cout << "Ok x 3" << valid_offers.size()  << std::endl;
+
 
 		for (auto x : selected_offers) {
 			// offers
@@ -92,6 +102,7 @@ namespace db {
 			ret.free_kilometer_ranges[free_km_idx].free_kilometer_range_count++;
 		}
 
+		std::cout << "Ok x 4" << valid_offers.size()  << std::endl;
 
 		return ret;
 	}
