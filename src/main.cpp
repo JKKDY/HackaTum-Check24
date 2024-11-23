@@ -6,8 +6,8 @@
 #include <string>
 #include <limits>
 
-#define MAX std::numeric_limits<double>::max()
-#define MIN std::numeric_limits<double>::min()
+#define MAX std::numeric_limits<int>::max()
+#define MIN std::numeric_limits<int>::min()
 
 #include "database/DataBase.h"
 
