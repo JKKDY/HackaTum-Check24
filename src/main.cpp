@@ -60,6 +60,8 @@ public:
 						.car_type = car_type_from_string(offerJson["carType"].get<std::string>()),
 						.has_vollkasko = offerJson["hasVollkasko"].get<bool>()
 					};
+
+				std::cout << "New offer: "<<offer.id << std::endl;
 				database.add_offer(offer);
 				// Add the offer to the in-memory vector
 			}
