@@ -47,7 +47,7 @@ public:
 						.end_date = offerJson["endDate"].get<int64_t>(),
 						.id = offerJson["ID"].get<std::string>(),
 						.data =
-							[] {
+							[&offerJson] {
 								std::array<char, 256> arr{};
 								std::string data_str = offerJson["data"].get<std::string>();
 								std::copy(data_str.begin(), data_str.end(), arr.begin());
