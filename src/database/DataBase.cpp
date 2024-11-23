@@ -18,9 +18,9 @@ namespace db {
 		std::cout << "Davor" << std::endl;
 
 		std::cout << "Size:" << std::endl;
-		for (const auto &offer : offers) {
-			std::cout << sizeof(offer) << std::endl;
-		}
+		// for (const auto &offer : offers) {
+		// 	std::cout << sizeof(offer) << std::endl;
+		// }
 		std::cout << sizeof(offers.size()) << std::endl;
 
 		std::cout << "Davor x2" << std::endl;
