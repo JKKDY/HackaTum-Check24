@@ -230,12 +230,10 @@ void queryMemory() {
 
 
 int main() {
-	std::cout << sizeof(Offer) << std::endl;
-	queryMemory();
 	DataBase database;
 	OffersHandler offersHandler(database);
 
-	Pistache::Address address("*:5000"); // Bind to all network interfaces on port 80
+	Pistache::Address address("*:80"); // Bind to all network interfaces on port 80
 	Pistache::Http::Endpoint server(address);
 
 	Pistache::Rest::Router router;
