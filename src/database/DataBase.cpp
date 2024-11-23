@@ -15,7 +15,7 @@ namespace db {
 		std::vector<Offer> valid_offers;
 
 		for (auto offer : offers) {
-
+			if (offer.region)
 		}
 
 	}

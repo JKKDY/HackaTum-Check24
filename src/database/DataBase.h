@@ -16,16 +16,16 @@ namespace db {
 	};
 
 	struct Offer {
-		int64_t startDate;
-		int64_t endDate;
-		std::string id;
-		std::array<char, 256> data;
-		int mostSpecificRegionID;
-		int numberSeats;
-		int price;
-		int freeKilometers;
-		CarType carType;
-		bool hasVollkasko;
+		int64_t start_date;             // Start date in ms since UNIX epoch
+		int64_t end_date;               // End date in ms since UNIX epoch
+		std::string id;                 // Unique identifier of the offer
+		std::array<char, 256> data;     // Base64 encoded 256-byte array
+		int region_id;                  // ID of the most specific region (leaf node)
+		int number_seats;               // Number of seats in the car
+		int price;                      // Price in cents
+		int free_kilometers;            // Number of free kilometers included
+		CarType car_type;               // Car type the offer belongs to
+		bool has_vollkasko;             // Whether the offer has Vollkasko
 	};
 
 	enum class SortOrder {
