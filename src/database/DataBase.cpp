@@ -73,7 +73,7 @@ namespace db {
 		// create price bins
 		std::cout << req.min_price << "  PRICE   " << req.max_price << std::endl;
 		std::cout << req.price_range_width << std::endl;
-		for (int i = req.min_price; i < req.max_price; i += req.price_range_width) {
+		for (int i = max(req.min_price, 0); i < req.max_price; i += req.price_range_width) {
 			ret.price_ranges.emplace_back(i, i + req.price_range_width);
 		}
 
