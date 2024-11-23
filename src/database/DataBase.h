@@ -15,6 +15,10 @@ namespace db {
 		ALL = LUXURY | FAMILY | SPORTS | SMALL
 	};
 
+	inline bool operator&(const CarType car, const CarType rhs) {
+		return car & rhs;
+	}
+
 	struct Offer {
 		int64_t start_date;             // Start date in ms since UNIX epoch
 		int64_t end_date;               // End date in ms since UNIX epoch
@@ -46,8 +50,8 @@ namespace db {
 		int min_free_kilometer_width;    // Required: The width of the min free kilometer in km
 
 		int min_number_seats = 0;        // Optional: Minimum number of seats the returned cars each have
-		double min_price = 0.0;          // Optional: Minimum (inclusive) price the offers have in cents
-		double max_price = 0.0;          // Optional: Maximum (exclusive) price the offers have in cents
+		int min_price = 0;          // Optional: Minimum (inclusive) price the offers have in cents
+		int max_price = 0;          // Optional: Maximum (exclusive) price the offers have in cents
 		CarType car_type = CarType::ALL; // Optional: Car type (small, sports, luxury, family)
 		bool only_vollkasko = false;     // Optional: Whether only offers with Vollkasko are returned
 		int min_free_kilometer = 0;      // Optional: Minimum number of kilometers included for free
@@ -56,26 +60,26 @@ namespace db {
 
 	struct Offers {
 		struct Offer {
-			std::string id;             //The unique identifier of the offer
-			std::string data;           //Base64 encoded 256-byte array representing additional data
+			std::string id;					//The unique identifier of the offer
+			std::array<char, 256> data;		//Base64 encoded 256-byte array representing additional data
 		};
 
 		struct PriceRanges {
 			int price_range_start;          //The start of the price range in cent
 			int price_range_end;            //The end of the price range in cent
-			int price_range_count;          //The number of offers in this price range
+			int price_range_count = 0;          //The number of offers in this price range
 		};
 
 		struct CarTypeCounts {
-			int small_count;                //The number of offers with the car type small
-			int sports_count;               //The number of offers with the car type sports
-			int luxury_count;               //The number of offers with the car type luxury
-			int family_count;               //The number of offers with the car type family
+			int small_count = 0;                //The number of offers with the car type small
+			int sports_count = 0;               //The number of offers with the car type sports
+			int luxury_count = 0;               //The number of offers with the car type luxury
+			int family_count = 0;               //The number of offers with the car type family
 		};
 
 		struct SeatsCount {
 			int number_seats;               //The number of seats the cars have
-			int seat_count;                 //The number of offers with the given number of seats
+			int seat_count = 0;                 //The number of offers with the given number of seats
 		};
 
 		struct FreeKilometerRange {
@@ -85,8 +89,8 @@ namespace db {
 		};
 
 		struct VollKaskoCount {
-			int vollkasko_true_count;       // Required: The number of offers with Vollkasko
-			int vollkasko_false_count;      // Required: The number of offers without Vollkasko
+			int vollkasko_true_count = 0;       // Required: The number of offers with Vollkasko
+			int vollkasko_false_count = 0;      // Required: The number of offers without Vollkasko
 		};
 
 		std::vector<Offer> offers;
