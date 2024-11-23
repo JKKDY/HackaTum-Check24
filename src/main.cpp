@@ -29,6 +29,7 @@ CarType car_type_from_string(const std::string &car_type_str) {
 class OffersHandler {
 public:
 	OffersHandler(db::DataBase db) : database(db) {}
+
 	// POST /api/offers - Adds new offers
 	void postOffers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
 		try {
@@ -74,77 +75,53 @@ public:
 	}
 
 
-private:
-	DataBase &database;
-};
-
-
-class GeneralRequestHandler : public Pistache::Http::Handler {
-public:
-	HTTP_PROTOTYPE(GeneralRequestHandler)
-
-	// This function will handle all requests
-	void onRequest(const Pistache::Http::Request &request, Pistache::Http::ResponseWriter response) override {
-		std::cout << "Received request: " << request.resource() << " Method: " << request.method() << std::endl;
-
-		// Example: Custom logic based on the endpoint or method
-		if (request.method() == Pistache::Http::Method::Get) {
-			response.send(Pistache::Http::Code::Ok, "This is a GET request\n");
-		} else if (request.method() == Pistache::Http::Method::Post) {
-			response.send(Pistache::Http::Code::Ok, "This is a POST request\n");
-		} else {
-			response.send(Pistache::Http::Code::Method_Not_Allowed, "Method not allowed\n");
+	// DELETE /api/offers - Clears all offers
+	void deleteOffers(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+		try {
+			// database.clear_offers(); // Assuming the database has a method to clear all offers
+			std::cout << "All offers cleared from the database" << std::endl;
+			response.send(Pistache::Http::Code::Ok, "Data was cleaned up");
+		}
+		catch (const std::exception& e) {
+			response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
 		}
 	}
+
+
+
+private:
+	DataBase &database;
 };
 
 
 void setupRoutes(Pistache::Rest::Router &router, OffersHandler& offersHandler) {
 	using namespace Pistache::Rest;
 	Routes::Post(router, "/api/offers", Routes::bind(&OffersHandler::postOffers, &offersHandler));
+	Routes::Delete(router, "/api/offers", Routes::bind(&OffersHandler::deleteOffers, &offersHandler));
 }
 
 int main() {
-	// Set up the address
-	Pistache::Address address("*:80");
+	DataBase database;
+	OffersHandler offersHandler(database);
 
-	// Create the server endpoint
-	auto server = std::make_shared<Pistache::Http::Endpoint>(address);
+	Pistache::Address address("*:80"); // Bind to all network interfaces on port 80
+	Pistache::Http::Endpoint server(address);
 
+	Pistache::Rest::Router router;
+	setupRoutes(router, offersHandler);
 
-	// Set the general handler for all requests
-	server->setHandler(Pistache::Http::make_handler<GeneralRequestHandler>());
+	auto options = Pistache::Http::Endpoint::options()
+	.threads(1)
+	.flags(Pistache::Tcp::Options::ReuseAddr);
 
-	// Start the server
-	std::cout << "Server running on port 80..." << std::endl;
-	server->serve();
+	server.init(options);
 
-	// Stop the server gracefully
-	server->shutdown();
+	server.setHandler(router.handler());
+
+	std::cout << "Starting server on port 80..." << std::endl;
+
+	server.serve();
+	server.shutdown();
 
 	return 0;
-
-	// DataBase database;
-	// OffersHandler offersHandler(database);
-	//
-	// Pistache::Address address("*:80"); // Bind to all network interfaces on port 80
-	// Pistache::Http::Endpoint server(address);
-	//
-	// Pistache::Rest::Router router;
-	// setupRoutes(router, offersHandler);
-	//
-	// auto options = Pistache::Http::Endpoint::options()
-	// .threads(1)
-	// .flags(Pistache::Tcp::Options::ReuseAddr);
-	//
-	// server.init(options);
-	//
-	// server.setHandler(router.handler());
-	//
-	// std::cout << "Starting server on port 80..." << std::endl;
-	//
-	// server.serve();
-	// server.shutdown();
-	//
-	// return 0;
 }
