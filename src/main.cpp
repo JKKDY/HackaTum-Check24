@@ -214,7 +214,22 @@ void setupRoutes(Pistache::Rest::Router &router, OffersHandler &offersHandler) {
 	Routes::Get(router, "/api/offers", Routes::bind(&OffersHandler::getOffers, &offersHandler));
 }
 
+#include <fstream>
+
+void queryMemory() {
+	std::ifstream meminfo("/proc/meminfo");
+	std::string line;
+	while (std::getline(meminfo, line)) {
+		if (line.find("MemAvailable:") == 0) {
+			std::cout << "Available Memory: " << line << '\n';
+			break;
+		}
+	}
+}
+
+
 int main() {
+	queryMemory();
 	DataBase database;
 	OffersHandler offersHandler(database);
 
